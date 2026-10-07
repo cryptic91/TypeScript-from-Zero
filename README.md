@@ -26,10 +26,16 @@ npm install
 
 Open `course.html` in your browser — just double-click it. No server needed.
 
-Then run your first exercise:
+Then run your first exercise. Copy it into `practice/` first — `exercises/` holds the blank templates, so leave those alone:
 
 ```bash
-npx tsx exercises/01-setup.ts
+# macOS / Linux
+cp exercises/01-setup.ts practice/
+
+# Windows PowerShell
+Copy-Item exercises\01-setup.ts practice\
+
+npx tsx practice/01-setup.ts
 ```
 
 **Requirements:** [Node.js](https://nodejs.org) (LTS version) and a text editor. [VS Code](https://code.visualstudio.com) is recommended — it shows TypeScript errors as you type, which is half of what makes the language useful.
