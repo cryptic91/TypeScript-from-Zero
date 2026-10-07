@@ -1,0 +1,15 @@
+{
+  "name": "typescript-from-zero",
+  "version": "1.0.0",
+  "description": "A 30-module TypeScript course in Bangla, with runnable exercises",
+  "private": true,
+  "scripts": {
+    "ex": "tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2"
+  }
+}

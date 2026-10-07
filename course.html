@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>
+:root{color-scheme:dark;box-sizing:border-box}
+body{margin:0;font:14px system-ui,-apple-system,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>TypeScript From Zero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600&display=swap">
+<style>
+/* Dark navy, signal blue. Layout: sticky module rail beside one working column — concept, code, exercise, quiz */
+:root{
+  --bg:#0A111C; --surface:#111B2B; --surface-2:#1A2638; --code:#0C1420;
+  --ink:#E4EDF9; --muted:#8699B6; --line:#223246;
+  --pass:#4D9CFF; --amber:#E0A84B; --amber-soft:#2E2314; --green:#5BD6A8; --red:#FF7B72; --purple:#C792EA;
+  --glow:rgba(77,156,255,.28);
+  --fd:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --fb:"IBM Plex Sans","Noto Sans Bengali",system-ui,-apple-system,sans-serif;
+  --fm:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);line-height:1.6;margin:0;
+ background-image:radial-gradient(900px 420px at 10% -8%,rgba(77,156,255,.10),transparent 60%);background-attachment:fixed}
+.wrap{max-width:1060px;margin:0 auto;padding-inline:20px;padding-block:26px 72px}
+h1,h2,h3{font-family:var(--fd);text-wrap:balance;margin:0}
+.eyebrow{font-family:var(--fm);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(27px,5.4vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin-top:8px}
+.lede{color:var(--muted);font-size:15px;max-width:58ch;margin:13px 0 0}
+
+.prog{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:22px 0 24px}
+.ptop{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.ptop .lbl{font-family:var(--fm);font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+.ptop .st{font-family:var(--fm);font-size:13px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.ptop .st b{color:var(--pass)}
+.bar{height:5px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2F6FD0,var(--pass));border-radius:999px;box-shadow:0 0 12px var(--glow);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+.layout{display:grid;grid-template-columns:230px 1fr;gap:28px;align-items:start}
+@media (max-width:820px){.layout{grid-template-columns:1fr;gap:16px}.rail{position:static!important;max-height:none!important;overflow:visible!important}}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 14px);max-height:calc(100vh - 40px);overflow-y:auto}
+.rgroup{margin-bottom:14px}
+.rgroup h4{font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--pass);margin:0 0 7px;font-weight:600}
+.rbtn{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;color:var(--muted);
+ font:inherit;font-size:13px;cursor:pointer;padding:6px 8px;border-radius:7px;line-height:1.35}
+.rbtn:hover{background:var(--surface);color:var(--ink)}
+.rbtn.cur{background:var(--surface);color:var(--ink);box-shadow:inset 2px 0 0 var(--pass)}
+.rbtn .n{font-family:var(--fm);font-size:10.5px;opacity:.65;min-width:16px;padding-top:1px}
+.rbtn.done .n::before{content:"✓";color:var(--pass)}
+.rbtn.done .n span{display:none}
+.rbtn.done{opacity:.6}
+
+.mod{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:14px}
+.mhead{font-family:var(--fm);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--pass);margin-bottom:9px}
+.mod h2{font-size:clamp(20px,3.6vw,26px);font-weight:800;letter-spacing:-.01em;margin-bottom:10px}
+.why{padding:12px 15px;border-left:3px solid var(--amber);background:var(--amber-soft);border-radius:0 8px 8px 0;
+ font-size:14px;line-height:1.7;max-width:64ch;margin-bottom:18px}
+.mod p{margin:0 0 12px;font-size:14.5px;line-height:1.8;opacity:.92;max-width:62ch}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;margin:14px 0}
+pre code{font-family:var(--fm);font-size:13px;line-height:1.75;color:var(--ink);background:none;padding:0;display:block;white-space:pre}
+code{font-family:var(--fm);font-size:.9em;background:var(--surface-2);padding:2px 6px;border-radius:4px;color:var(--pass)}
+.k{color:var(--purple)}.s{color:var(--green)}.cm{color:var(--muted);font-style:italic}.f{color:var(--pass)}.n{color:var(--amber)}
+
+.block{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:16px}
+.block h3{font-family:var(--fm);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--pass);margin-bottom:10px;font-weight:600}
+.task{font-size:14.5px;line-height:1.75;margin:0 0 12px;max-width:62ch}
+.btn{font-family:var(--fm);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:9px 16px;
+ cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--muted);transition:all .15s}
+.btn:hover{color:var(--ink);border-color:var(--muted)}
+.btn.main{background:var(--pass);border-color:var(--pass);color:#06101D;font-weight:600;box-shadow:0 0 16px var(--glow)}
+.btn.main:hover{filter:brightness(1.08);color:#06101D}
+.btns{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.reveal{margin-top:12px}
+.hintbox{font-size:13.5px;line-height:1.7;color:var(--muted);padding:10px 13px;border-left:2px solid var(--line);margin-top:10px}
+
+.quiz{margin-top:16px}
+.qitem{border-top:1px solid var(--line);padding-top:15px;margin-top:15px}
+.qitem:first-child{border-top:0;padding-top:0;margin-top:0}
+.qq{font-size:14.5px;font-weight:600;margin-bottom:11px;line-height:1.6;max-width:62ch}
+.opt{display:block;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:9px;
+ padding:11px 14px;margin-bottom:7px;color:var(--ink);font:inherit;font-size:14px;cursor:pointer;transition:all .15s;line-height:1.5}
+.opt:hover:not(:disabled){border-color:var(--pass)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--green);background:rgba(91,214,168,.12)}
+.opt.wrong{border-color:var(--red);background:rgba(255,123,114,.1)}
+.exp{font-size:13.5px;line-height:1.75;color:var(--muted);padding:11px 14px;background:var(--code);border-radius:9px;margin-top:8px;max-width:64ch}
+.exp b{color:var(--ink)}
+
+.nav{display:flex;gap:10px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+.foot{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:26px}
+.foot h3{font-size:16px;margin-bottom:11px}
+.foot li{font-size:14px;color:var(--muted);margin-bottom:8px;line-height:1.6}
+.foot a{color:var(--pass)}
+.reset{margin-top:22px;font-family:var(--fm);font-size:11px;color:var(--muted);background:none;border:0;cursor:pointer;text-decoration:underline;padding:0}
+.reset:hover{color:var(--amber)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="eyebrow">শূন্য থেকে TypeScript · ৩০টা মডিউল · নিজের গতিতে</div>
+  <h1>TypeScript From Zero</h1>
+  <p class="lede">দিনের হিসাব নাই — যেদিন সময় পাবে, যতটা পারবে। প্রতিটা মডিউলে ধারণা, কোড, একটা অনুশীলন আর কুইজ।</p>
+
+  <div class="prog">
+    <div class="ptop">
+      <span class="lbl">অগ্রগতি</span>
+      <span class="st"><b id="sDone">0</b> / <span id="sTotal">30</span> মডিউল শেষ</span>
+    </div>
+    <div class="bar"><i id="sBar"></i></div>
+  </div>
+
+  <div class="layout">
+    <nav class="rail" id="rail"></nav>
+    <main id="main"></main>
+  </div>
+
+  <div class="foot">
+    <h3>কীভাবে ব্যবহার করবে</h3>
+    <ul>
+      <li><b>পড়ো, তারপর টাইপ করো।</b> অনুশীলনের উত্তর দেখার আগে নিজে লেখার চেষ্টা করো — ভুল হলেও। ওই ভুলটাই শেখায়।</li>
+      <li><b>কোড কপি করবে না, হাতে লিখবে।</b> টাইপ করার সময় মস্তিষ্ক যা শেখে, পড়ার সময় তা শেখে না।</li>
+      <li><b>ক্রম মানতে হবে না।</b> আটকে গেলে পরেরটায় যাও, পরে ফিরে এসো।</li>
+      <li><b>অগ্রগতি এই ব্রাউজারেই সেভ হয়</b> — অন্য কম্পিউটারে আলাদা থাকবে।</li>
+      <li>সব শেষ হলে Playwright QA Lab এর week 5 (Page Object) অনেক সহজ লাগবে।</li>
+    </ul>
+    <button class="reset" id="rst" type="button">সব অগ্রগতি মুছে ফেলো</button>
+  </div>
+</div>
+
+<script>
+const COURSE=[
+{p:"ভিত্তি",mods:[
+
+{t:"সেটআপ — TypeScript চালানো",
+w:"TypeScript সরাসরি চলে না। ব্রাউজার বা Node শুধু JavaScript বোঝে। তাই আগে জানতে হবে কীভাবে একটা .ts ফাইল চালাবে।",
+c:["TypeScript হলো JavaScript এর উপরে একটা স্তর। তুমি .ts ফাইলে লেখো, একটা compiler সেটাকে .js বানায়, তারপর Node চালায়।",
+"শেখার সময় এই দুই ধাপ আলাদা করে করার দরকার নাই। <code>tsx</code> নামে একটা টুল আছে যেটা এক কমান্ডেই দুইটা কাজ করে দেয়।",
+"অফিসে একটা আলাদা ফোল্ডার বানাও — ts-practice। সেখানেই সব অনুশীলন।"],
+code:"# একবার করতে হবে\nmkdir ts-practice\ncd ts-practice\nnpm init -y\nnpm install -D typescript tsx\n\n# প্রতিবার একটা ফাইল চালাতে\nnpx tsx hello.ts",
+ex:{task:"hello.ts নামে একটা ফাইল বানাও যেটা তোমার নাম প্রিন্ট করে। চালাও।",
+ans:"console.log('Rakib');",
+hint:"console.log() দিয়ে কিছু প্রিন্ট করা যায়। ভিতরে quote দিয়ে লেখা দাও।"},
+q:[{q:"TypeScript ফাইল সরাসরি Node-এ চলে না কেন?",o:["Node শুধু JavaScript বোঝে, TypeScript না","TypeScript খুব ধীর","Node এ TypeScript নিষিদ্ধ"],a:0,
+e:"TypeScript একটা আলাদা ভাষা। চালানোর আগে সেটাকে JavaScript-এ রূপান্তর (compile) করতে হয়। tsx টুলটা এই কাজটা স্বয়ংক্রিয়ভাবে করে দেয়।"}]},
+
+{t:"Variable — let আর const",
+w:"প্রতিটা প্রোগ্রামের ভিত্তি হলো তথ্য রাখা। কোথায় রাখবে আর সেটা পরে বদলাবে কিনা — এই সিদ্ধান্তটাই প্রথম।",
+c:["<code>const</code> দিয়ে বানানো জিনিস পরে বদলানো যায় না। <code>let</code> দিয়ে বানানোটা যায়।",
+"নিয়ম: <b>সবসময় const দিয়ে শুরু করো।</b> যখন সত্যিই বদলানোর দরকার পড়বে, তখন let-এ বদলাবে। এতে ভুলে কিছু বদলে যাওয়ার সম্ভাবনা কমে।",
+"পুরনো কোডে <code>var</code> দেখবে। নতুন কোডে কখনো ব্যবহার করবে না — এর scope এর নিয়ম বিভ্রান্তিকর।"],
+code:"const storeName = 'BLOMINOR';\nlet itemCount = 0;\n\nitemCount = 3;        // ঠিক আছে\n// storeName = 'X';   // এরর — const বদলানো যায় না",
+ex:{task:"একটা const দিয়ে product এর নাম রাখো, আর একটা let দিয়ে দাম। তারপর দামটা বদলাও আর দুইটাই প্রিন্ট করো।",
+ans:"const productName = 'Shirt';\nlet price = 500;\n\nprice = 450;\nconsole.log(productName, price);",
+hint:"const name = '...'; let price = ...; তারপর price = নতুন মান;"},
+q:[{q:"কোনটা দিয়ে শুরু করা উচিত?",o:["const — দরকার হলে পরে let করবে","let — পরে const করবে","var — সবচেয়ে নিরাপদ"],a:0,
+e:"const মানে এই জিনিসটা বদলাবে না — এটা পড়ার সময় একটা নিশ্চয়তা দেয়। সত্যিই বদলানোর দরকার হলে তখন let করবে।"},
+{q:"var ব্যবহার করবে না কেন?",o:["এর scope এর নিয়ম বিভ্রান্তিকর, বাগ তৈরি করে","এটা ধীর","TypeScript এ var নাই"],a:0,
+e:"var ফাংশনের পুরোটা জুড়ে বাঁচে, block এর ভিতরে সীমাবদ্ধ থাকে না। এটা সূক্ষ্ম বাগের উৎস। let আর const block-scoped।"}]},
+
+{t:"Primitive type — মৌলিক ধরন",
+w:"TypeScript এর পুরো শক্তি এখান থেকে শুরু। প্রতিটা জিনিসের একটা ধরন আছে, আর ভুল ধরন ব্যবহার করলে কোড চালানোর আগেই ধরা পড়ে।",
+c:["তিনটা প্রধান ধরন: <code>string</code> (লেখা), <code>number</code> (সংখ্যা), <code>boolean</code> (সত্য/মিথ্যা)।",
+"JavaScript-এ number একটাই — পূর্ণসংখ্যা আর দশমিকের জন্য আলাদা ধরন নাই। C/C++ এর int আর float এর মতো না।",
+"আরও দুইটা আছে: <code>null</code> (ইচ্ছাকৃতভাবে খালি) আর <code>undefined</code> (মান দেওয়াই হয়নি)।"],
+code:"const name: string = 'Rakib';\nconst age: number = 28;\nconst isActive: boolean = true;\n\nconst price = 499.99;   // এটাও number\nlet result = null;      // ইচ্ছা করে খালি\nlet notSet;             // undefined",
+ex:{task:"তিনটা variable বানাও — একটা string, একটা number, একটা boolean — একটা order এর তথ্য রাখতে। টাইপ স্পষ্ট করে লেখো।",
+ans:"const orderId: string = 'ORD-1001';\nconst total: number = 2450;\nconst isPaid: boolean = false;\n\nconsole.log(orderId, total, isPaid);",
+hint:"const নাম: ধরন = মান; এভাবে লেখো।"},
+q:[{q:"JavaScript-এ ১০ আর ১০.৫ এর ধরন কী?",o:["দুইটাই number","১০ হলো int, ১০.৫ হলো float","১০ number, ১০.৫ decimal"],a:0,
+e:"JavaScript-এ সব সংখ্যা একই ধরনের — number। C/C++ এর মতো int/float/double এর আলাদা ভাগ নাই।"},
+{q:"null আর undefined এর পার্থক্য কী?",o:["null ইচ্ছাকৃতভাবে খালি, undefined মানে মান দেওয়াই হয়নি","কোনো পার্থক্য নাই","undefined শুধু সংখ্যার জন্য"],a:0,
+e:"undefined মানে ভুলে গেছো বা এখনো দাওনি। null মানে তুমি জেনেশুনে বলেছো — এখানে কিছু নাই।"}]},
+
+{t:"Type inference — TypeScript নিজেই বুঝে নেয়",
+w:"সব জায়গায় টাইপ লেখার দরকার নাই। কখন লিখবে আর কখন লিখবে না — এটা জানলে কোড পরিষ্কার থাকে।",
+c:["মান দিয়ে দিলে TypeScript নিজেই ধরন বুঝে নেয়। একে বলে <b>inference</b>।",
+"<code>const name = 'Rakib'</code> — TypeScript জানে এটা string। আলাদা করে <code>: string</code> লেখার দরকার নাই।",
+"কখন লিখবে: যখন সাথে সাথে মান দিচ্ছো না, বা যখন ফাংশনের parameter লিখছো।"],
+code:"const name = 'Rakib';        // TypeScript বোঝে: string\nconst age = 28;              // বোঝে: number\n\nlet total;                   // এখানে বোঝার উপায় নাই\nlet count: number;           // তাই লিখে দিতে হবে\n\n// name = 5;  // এরর — string এ number দেওয়া যাবে না",
+ex:{task:"দুইটা variable বানাও — একটায় টাইপ লিখবে না (inference), আরেকটায় লিখবে কারণ সাথে সাথে মান দিচ্ছো না। পরে দ্বিতীয়টায় মান দাও।",
+ans:"const storeName = 'BLOMINOR';   // inference\nlet orderTotal: number;         // মান পরে দেব\n\norderTotal = 1500;\nconsole.log(storeName, orderTotal);",
+hint:"let x: number; লিখে পরের লাইনে x = 10; দাও।"},
+q:[{q:"const city = 'Dhaka'; — এখানে : string লেখা দরকার?",o:["না, TypeScript নিজেই বুঝে নেয়","হ্যাঁ, নইলে এরর","হ্যাঁ, নইলে ধীর হবে"],a:0,
+e:"মান দেখেই TypeScript ধরন বুঝে নেয়। অপ্রয়োজনে টাইপ লিখলে কোড অকারণে ভারী হয়।"}]},
+
+{t:"Operator আর তুলনা",
+w:"=== আর == এর পার্থক্য না জানলে এমন বাগ তৈরি হবে যেটা ঘণ্টার পর ঘণ্টা খুঁজতে হবে।",
+c:["গণিতের চিহ্ন: <code>+ - * / %</code>। <code>%</code> হলো ভাগশেষ।",
+"তুলনা: <code>=== !== &gt; &lt; &gt;= &lt;=</code>",
+"<b>সবসময় === ব্যবহার করবে, == কখনো না।</b> == ধরন বদলে তুলনা করে, তাই <code>'5' == 5</code> সত্য হয়ে যায় — আর সেখান থেকেই বাগ।",
+"যুক্তি: <code>&&</code> (আর), <code>||</code> (অথবা), <code>!</code> (না)।"],
+code:"5 === 5        // true\n'5' === 5      // false  — ঠিক আচরণ\n'5' == 5       // true   — বিপজ্জনক\n\nconst inStock = true;\nconst hasPrice = true;\ninStock && hasPrice   // true — দুইটাই লাগবে\ninStock || hasPrice   // true — একটা হলেই হবে\n!inStock              // false",
+ex:{task:"একটা order এর total আর paid amount নিয়ে চেক করো — পুরো টাকা দেওয়া হয়েছে কিনা। ফলাফল প্রিন্ট করো।",
+ans:"const total = 1500;\nconst paid = 1500;\n\nconst isFullyPaid = paid === total;\nconsole.log(isFullyPaid);",
+hint:"=== দিয়ে দুইটা মান তুলনা করো, ফলাফল একটা const-এ রাখো।"},
+q:[{q:"'5' == 5 এর ফল কী?",o:["true — == ধরন বদলে তুলনা করে","false","এরর"],a:0,
+e:"== তুলনা করার আগে ধরন বদলে নেয়, তাই '5' হয়ে যায় 5। এজন্যই === ব্যবহার করতে হয় — সেটা ধরনসহ মেলায়।"},
+{q:"&& কখন true দেয়?",o:["দুই পাশেই true হলে","যেকোনো এক পাশে true হলে","কখনো না"],a:0,
+e:"&& মানে 'আর' — দুইটা শর্তই পূরণ হতে হবে। || মানে 'অথবা' — একটা হলেই হবে।"}]},
+
+{t:"Conditional — if, else, ternary",
+w:"কোডে সিদ্ধান্ত নেওয়ার উপায়। C/C++ এ যা করেছো প্রায় একই, কিন্তু truthy/falsy ধারণাটা নতুন।",
+c:["<code>if / else if / else</code> — গঠন C এর মতোই।",
+"<b>Ternary</b> — ছোট if/else এর সংক্ষিপ্ত রূপ: <code>শর্ত ? সত্য হলে : মিথ্যা হলে</code>",
+"<b>Truthy / falsy</b> — JavaScript-এ boolean ছাড়া অন্য জিনিসও শর্তে ব্যবহার করা যায়। এগুলো falsy: <code>false, 0, '', null, undefined, NaN</code>। বাকি সব truthy।"],
+code:"const stock = 0;\n\nif (stock > 10) {\n  console.log('প্রচুর আছে');\n} else if (stock > 0) {\n  console.log('কম আছে');\n} else {\n  console.log('শেষ');\n}\n\n// ternary\nconst status = stock > 0 ? 'available' : 'sold out';\n\n// truthy/falsy\nif (stock) { }      // 0 falsy, তাই চলবে না\nif ('') { }         // খালি string falsy",
+ex:{task:"একটা discount percentage নিয়ে ঠিক করো — 0 হলে 'No discount', 50 এর কম হলে 'Regular', নইলে 'Big sale'. প্রিন্ট করো।",
+ans:"const discount = 30;\n\nif (discount === 0) {\n  console.log('No discount');\n} else if (discount < 50) {\n  console.log('Regular');\n} else {\n  console.log('Big sale');\n}",
+hint:"if / else if / else এর তিনটা শাখা লাগবে।"},
+q:[{q:"নিচের কোনটা falsy?",o:["0 এবং খালি string ''","'0' (quote সহ)","[] (খালি array)"],a:0,
+e:"falsy মান ছয়টা: false, 0, '', null, undefined, NaN। মনে রাখো — '0' এবং খালি array দুইটাই truthy, যদিও খালি মনে হয়।"},
+{q:"const s = x > 0 ? 'yes' : 'no'; — এটা কী?",o:["ternary — ছোট if/else","একটা loop","একটা ফাংশন"],a:0,
+e:"শর্ত ? সত্য হলে এই মান : মিথ্যা হলে এই মান। এক লাইনে if/else লেখার উপায়।"}]},
+
+{t:"Loop — পুনরাবৃত্তি",
+w:"একই কাজ বারবার করার উপায়। Playwright-এ একই test কয়েকটা product দিয়ে চালাতে এটাই লাগবে।",
+c:["<code>for...of</code> — array এর প্রতিটা জিনিস ধরে ধরে। <b>এটাই সবচেয়ে বেশি ব্যবহার করবে।</b>",
+"<code>for</code> (পুরনো ধরন) — যখন index নিজে দরকার।",
+"<code>while</code> — যতক্ষণ শর্ত সত্য।",
+"<code>for...in</code> — object এর key গুলো ঘোরাতে। array-তে এটা ব্যবহার করবে না।"],
+code:"const products = ['Shirt', 'Mug', 'Cap'];\n\nfor (const p of products) {\n  console.log(p);\n}\n\n// index লাগলে\nfor (let i = 0; i < products.length; i++) {\n  console.log(i, products[i]);\n}\n\nlet count = 3;\nwhile (count > 0) {\n  console.log(count);\n  count--;\n}",
+ex:{task:"তিনটা দামের একটা array বানাও, for...of দিয়ে ঘুরিয়ে মোট যোগফল বের করো।",
+ans:"const prices = [500, 300, 700];\nlet total = 0;\n\nfor (const p of prices) {\n  total = total + p;\n}\n\nconsole.log(total);   // 1500",
+hint:"let total = 0; দিয়ে শুরু করো, তারপর loop এর ভিতরে যোগ করতে থাকো।"},
+q:[{q:"Array এর জিনিসগুলো ঘোরাতে কোনটা ব্যবহার করবে?",o:["for...of","for...in","while"],a:0,
+e:"for...of সরাসরি প্রতিটা মান দেয়। for...in key দেয় — object এর জন্য, array এর জন্য না।"}]},
+
+{t:"Function — ফাংশন",
+w:"কোড পুনরায় ব্যবহার করার মূল উপায়। TypeScript-এ parameter আর return এর টাইপ লেখাটাই আসল পার্থক্য।",
+c:["গঠন: নাম, parameter (তাদের টাইপসহ), return টাইপ, আর শরীর।",
+"<b>Parameter এর টাইপ সবসময় লিখতে হবে</b> — TypeScript এগুলো অনুমান করতে পারে না।",
+"Return টাইপ সাধারণত অনুমান করে নিতে পারে, তাই না লিখলেও চলে। কিন্তু লিখলে উদ্দেশ্য স্পষ্ট হয়।",
+"কিছু ফেরত না দিলে টাইপ হয় <code>void</code>।"],
+code:"function addTax(price: number): number {\n  return price * 1.15;\n}\n\nfunction greet(name: string): void {\n  console.log('Hello ' + name);\n}\n\nconsole.log(addTax(100));   // 115\n\n// optional parameter — ? দিয়ে\nfunction log(msg: string, level?: string) {\n  console.log(level ?? 'info', msg);\n}",
+ex:{task:"একটা ফাংশন লেখো যেটা দাম আর discount percentage নিয়ে ছাড়ের পরের দাম ফেরত দেয়। টাইপ সব লেখো।",
+ans:"function applyDiscount(price: number, percent: number): number {\n  return price - (price * percent / 100);\n}\n\nconsole.log(applyDiscount(1000, 20));   // 800",
+hint:"function নাম(a: number, b: number): number { return ...; }"},
+q:[{q:"কোনটা সবসময় লিখতে হবে?",o:["Parameter এর টাইপ","Return টাইপ","দুইটাই বাধ্যতামূলক"],a:0,
+e:"TypeScript parameter এর টাইপ অনুমান করতে পারে না — তুমি কী পাঠাবে সে জানে না। কিন্তু return কী হবে সেটা শরীর দেখে বুঝে নিতে পারে।"},
+{q:"void মানে কী?",o:["ফাংশনটা কিছু ফেরত দেয় না","ফাংশনটা খালি","একটা এরর"],a:0,
+e:"যে ফাংশন শুধু কিছু করে (যেমন প্রিন্ট) কিন্তু কোনো মান ফেরত দেয় না, তার return টাইপ void।"}]},
+
+{t:"Arrow function",
+w:"Playwright এর প্রতিটা test এ এই চিহ্নটা আছে। শুধু ফাংশন লেখার একটা সংক্ষিপ্ত রূপ।",
+c:["<code>=&gt;</code> দিয়ে ফাংশন লেখা। নাম দেওয়ার দরকার নাই — সরাসরি একটা variable-এ রাখা যায়, বা অন্য ফাংশনের ভিতরে পাঠানো যায়।",
+"এক লাইনের ফাংশনে <code>{ }</code> আর <code>return</code> বাদ দেওয়া যায় — মানটা নিজেই ফেরত যায়।",
+"Playwright-এ <code>test('নাম', async () =&gt; { ... })</code> — এই দ্বিতীয় অংশটাই arrow function।"],
+code:"// সাধারণ\nfunction add(a: number, b: number) { return a + b; }\n\n// arrow — একই জিনিস\nconst add2 = (a: number, b: number) => a + b;\n\n// একাধিক লাইন হলে { } লাগবে\nconst addTax = (price: number) => {\n  const tax = price * 0.15;\n  return price + tax;\n};\n\n// অন্য ফাংশনে পাঠানো\n[1, 2, 3].map(n => n * 2);   // [2, 4, 6]",
+ex:{task:"আগের applyDiscount ফাংশনটা arrow function হিসেবে আবার লেখো।",
+ans:"const applyDiscount = (price: number, percent: number): number =>\n  price - (price * percent / 100);\n\nconsole.log(applyDiscount(1000, 20));",
+hint:"const নাম = (a: number, b: number): number => ফলাফল;"},
+q:[{q:"const double = (n: number) => n * 2; — এখানে return কই?",o:["এক লাইনের arrow function নিজে থেকেই ফেরত দেয়","return ভুলে বাদ গেছে","এটা কিছু ফেরত দেয় না"],a:0,
+e:"{ } ছাড়া লিখলে expression টাই return হয়ে যায়। { } দিলে তখন return লিখতে হবে।"}]},
+
+{t:"Scope — কোন জিনিস কোথায় বাঁচে",
+w:"ভুল জায়গায় variable বানালে 'undefined' বা 'is not defined' এরর আসে। Scope বুঝলে এগুলো আর হয় না।",
+c:["<code>{ }</code> এর ভিতরে <code>let</code> বা <code>const</code> দিয়ে বানানো জিনিস শুধু ওই বন্ধনীর ভিতরেই বাঁচে।",
+"ভিতর থেকে বাইরের জিনিস দেখা যায়। বাইরে থেকে ভিতরের জিনিস দেখা যায় না।",
+"এজন্যই loop এর ভিতরে বানানো variable loop শেষে আর থাকে না।"],
+code:"const outer = 'আমি বাইরে';\n\nif (true) {\n  const inner = 'আমি ভিতরে';\n  console.log(outer);   // দেখা যায়\n}\n\n// console.log(inner);  // এরর — বাইরে নাই\n\nfunction test() {\n  const local = 'ফাংশনের ভিতরে';\n}\n// console.log(local);  // এরর",
+ex:{task:"একটা loop এর বাইরে total বানাও, ভিতরে যোগ করো, তারপর বাইরে প্রিন্ট করো। ভিতরে বানালে কী হতো ভেবে দেখো।",
+ans:"let total = 0;\nconst prices = [100, 200, 300];\n\nfor (const p of prices) {\n  total += p;\n}\n\nconsole.log(total);   // 600 — বাইরে বানানোর কারণেই এটা কাজ করল",
+hint:"let total = 0; loop এর আগে লিখতে হবে, নইলে loop শেষে হারিয়ে যাবে।"},
+q:[{q:"if block এর ভিতরে const দিয়ে বানানো জিনিস বাইরে পাওয়া যায়?",o:["না, শুধু ওই block এর ভিতরেই বাঁচে","হ্যাঁ, সব জায়গায় পাওয়া যায়","শুধু একই ফাইলে পাওয়া যায়"],a:0,
+e:"let আর const block-scoped — { } এর ভিতরে জন্ম, ওখানেই মৃত্যু। এটা var এর চেয়ে নিরাপদ, কারণ var পুরো ফাংশন জুড়ে বাঁচে।"}]}
+
+]},
+{p:"ডেটা নিয়ে কাজ",mods:[
+
+{t:"Array — তালিকা",
+w:"একাধিক জিনিস একসাথে রাখার উপায়। test data, product list, এরর তালিকা — সব array।",
+c:["Array বানানো সহজ, কিন্তু TypeScript-এ ধরন বলে দিতে হয় — ভিতরে কী থাকবে।",
+"<code>string[]</code> মানে string এর array। <code>number[]</code> মানে সংখ্যার array।",
+"Index শূন্য থেকে শুরু। <code>arr[0]</code> প্রথমটা। <code>arr.length</code> কয়টা আছে।"],
+code:"const products: string[] = ['Shirt', 'Mug'];\nconst prices: number[] = [500, 300];\n\nproducts[0];          // 'Shirt'\nproducts.length;      // 2\n\nproducts.push('Cap');     // শেষে যোগ\nproducts.pop();           // শেষেরটা সরিয়ে ফেরত দেয়\nproducts.includes('Mug'); // true\n\n// নতুন array বানানো, পুরনোটা অক্ষত\nconst more = [...products, 'Bag'];",
+ex:{task:"চারটা product এর একটা array বানাও। প্রথম আর শেষ জিনিসটা প্রিন্ট করো, আর মোট কয়টা আছে সেটাও।",
+ans:"const items: string[] = ['Shirt', 'Mug', 'Cap', 'Bag'];\n\nconsole.log(items[0]);\nconsole.log(items[items.length - 1]);\nconsole.log(items.length);",
+hint:"শেষেরটা পেতে items[items.length - 1] — কারণ index শূন্য থেকে শুরু।"},
+q:[{q:"const a = [1,2,3]; a[3] কী দেবে?",o:["undefined — ওই index এ কিছু নাই","3","এরর"],a:0,
+e:"index শূন্য থেকে শুরু, তাই তিনটা জিনিসের index হলো 0, 1, 2। a[3] নাই — undefined আসবে, এরর না। এই নীরব undefined অনেক বাগের উৎস।"},
+{q:"string[] মানে কী?",o:["string দিয়ে ভরা একটা array","একটা string","string এর দৈর্ঘ্য"],a:0,
+e:"টাইপের পরে [] দিলে বোঝায় ওই ধরনের একটা array। number[], boolean[] — একই নিয়ম।"}]},
+
+{t:"Array method — map, filter, find",
+w:"loop না লিখে array নিয়ে কাজ করার আধুনিক উপায়। বাস্তব কোডে for loop এর চেয়ে এগুলোই বেশি দেখবে।",
+c:["<code>map</code> — প্রতিটা জিনিস বদলে একটা নতুন array বানায়। সংখ্যা একই থাকে।",
+"<code>filter</code> — শর্ত মেলে এমনগুলো রেখে নতুন array বানায়। সংখ্যা কমতে পারে।",
+"<code>find</code> — শর্ত মেলে এমন <b>প্রথম</b> জিনিসটা ফেরত দেয়, array না।",
+"তিনটাই <b>নতুন</b> জিনিস বানায়, মূল array অক্ষত থাকে।"],
+code:"const prices = [100, 250, 500, 80];\n\nconst withTax = prices.map(p => p * 1.15);\n// [115, 287.5, 575, 92]\n\nconst expensive = prices.filter(p => p > 200);\n// [250, 500]\n\nconst firstCheap = prices.find(p => p < 100);\n// 80\n\nconst total = prices.reduce((sum, p) => sum + p, 0);\n// 930",
+ex:{task:"দামের একটা array থেকে ২০০ টাকার বেশি দামগুলো বের করো, তারপর সেগুলোতে ১০% ছাড় দাও।",
+ans:"const prices = [100, 250, 500, 80, 300];\n\nconst expensive = prices.filter(p => p > 200);\nconst discounted = expensive.map(p => p * 0.9);\n\nconsole.log(discounted);   // [225, 450, 270]",
+hint:"আগে filter, তারপর সেই ফলাফলে map। চাইলে একসাথেও লেখা যায়।"},
+q:[{q:"map আর filter এর মূল পার্থক্য কী?",o:["map প্রতিটা বদলায়, filter কিছু বাদ দেয়","map দ্রুত","filter শুধু সংখ্যায় কাজ করে"],a:0,
+e:"map এ array এর সাইজ একই থাকে, ভিতরের মান বদলায়। filter এ মান একই থাকে, সাইজ কমে।"},
+{q:"find কী ফেরত দেয়?",o:["শর্ত মেলা প্রথম জিনিসটা","মিলে যাওয়া সবগুলোর array","true বা false"],a:0,
+e:"find একটা জিনিস দেয় (বা কিছু না মিললে undefined)। সবগুলো চাইলে filter ব্যবহার করবে।"}]},
+
+{t:"Object — নাম দিয়ে তথ্য",
+w:"বাস্তব তথ্য কখনো একলা আসে না। একটা order এর id, total, status — সব একসাথে। সেটাই object।",
+c:["Object হলো নাম-মান জোড়ার সংগ্রহ। <code>{ key: value }</code>",
+"মান পাওয়া যায় <code>obj.key</code> দিয়ে।",
+"TypeScript-এ object এর আকৃতিও টাইপ দিয়ে বলে দেওয়া যায় — কোন key থাকবে আর তার ধরন কী।"],
+code:"const order = {\n  id: 'ORD-1001',\n  total: 1500,\n  isPaid: false\n};\n\norder.id;        // 'ORD-1001'\norder.total;     // 1500\n\norder.total = 1600;    // ঠিক আছে — ভিতরের মান বদলানো যায়\n// order = {};         // এরর — পুরোটা বদলানো যায় না (const)\n\n// টাইপ স্পষ্ট করে\nconst p: { name: string; price: number } = {\n  name: 'Shirt',\n  price: 500\n};",
+ex:{task:"একটা product object বানাও — নাম, দাম আর stock আছে কিনা। তারপর দাম বদলে প্রিন্ট করো।",
+ans:"const product = {\n  name: 'Shirt',\n  price: 500,\n  inStock: true\n};\n\nproduct.price = 450;\nconsole.log(product.name, product.price, product.inStock);",
+hint:"const product = { name: '...', price: ..., inStock: true };"},
+q:[{q:"const দিয়ে বানানো object এর ভিতরের মান বদলানো যায়?",o:["হ্যাঁ — const শুধু পুরো object বদলাতে বাধা দেয়","না, কিছুই বদলানো যায় না","শুধু number বদলানো যায়"],a:0,
+e:"const মানে এই নামটা অন্য object-এ পয়েন্ট করতে পারবে না। কিন্তু ওই object এর ভিতরের property বদলানো যায়। এটা অনেকে ভুল বোঝে।"}]},
+
+{t:"Destructuring — ভিতর থেকে টেনে বের করা",
+w:"Playwright এর <code>({ page })</code> এটাই। না বুঝলে প্রতিটা test এর প্রথম লাইনটাই রহস্য থেকে যায়।",
+c:["Object থেকে কয়েকটা জিনিস একসাথে বের করে আলাদা variable বানানো।",
+"<code>const { name, price } = product;</code> — এখন name আর price আলাদা variable।",
+"Array-তেও কাজ করে, তবে সেখানে নামের বদলে ক্রম গুরুত্বপূর্ণ।",
+"ফাংশনের parameter-এও করা যায় — Playwright ঠিক এটাই করে।"],
+code:"const product = { name: 'Shirt', price: 500, stock: 3 };\n\n// পুরনো ধরন\nconst name1 = product.name;\n\n// destructuring\nconst { name, price } = product;\nconsole.log(name, price);   // Shirt 500\n\n// array থেকে\nconst [first, second] = ['a', 'b'];\n\n// parameter-এ — Playwright এর ধরন\nfunction show({ name, price }: { name: string; price: number }) {\n  console.log(name, price);\n}",
+ex:{task:"একটা order object বানাও (id, total, status), destructuring দিয়ে id আর total বের করে প্রিন্ট করো।",
+ans:"const order = { id: 'ORD-1', total: 1500, status: 'paid' };\n\nconst { id, total } = order;\nconsole.log(id, total);",
+hint:"const { id, total } = order; — নামগুলো object এর key এর সাথে মিলতে হবে।"},
+q:[{q:"Playwright এ async ({ page }) => {} — এখানে { page } কী করছে?",o:["Playwright যে object দেয় তার ভিতর থেকে page টা বের করছে","একটা নতুন object বানাচ্ছে","page কে টাইপ দিচ্ছে"],a:0,
+e:"Playwright একটা বড় object দেয় যাতে page, request, context সব থাকে। { page } লিখে তুমি শুধু page টা নিচ্ছো। { page, request } লিখলে দুইটা পেতে।"}]},
+
+{t:"Spread আর rest — তিনটা বিন্দু",
+w:"একই চিহ্ন <code>...</code>, দুই রকম কাজ। কোন জায়গায় আছে তার উপর নির্ভর করে।",
+c:["<b>Spread</b> — ছড়িয়ে দেওয়া। array বা object কপি করতে, বা জোড়া লাগাতে।",
+"<b>Rest</b> — জড়ো করা। ফাংশনে অনির্দিষ্ট সংখ্যক argument নিতে।",
+"পার্থক্য চেনার উপায়: ডান পাশে থাকলে spread (ছড়াচ্ছে), parameter এ থাকলে rest (জড়ো করছে)।",
+"Object কপি করার সময় সাবধান — এটা <b>shallow copy</b>, ভিতরের object গুলো শেয়ার হয়।"],
+code:"const a = [1, 2];\nconst b = [3, 4];\nconst all = [...a, ...b];        // [1,2,3,4]\n\nconst base = { name: 'Shirt', price: 500 };\nconst updated = { ...base, price: 450 };\n// { name: 'Shirt', price: 450 }\n\n// rest — যত খুশি argument\nfunction sum(...nums: number[]) {\n  return nums.reduce((s, n) => s + n, 0);\n}\nsum(1, 2, 3, 4);   // 10",
+ex:{task:"একটা product object বানাও, তারপর spread দিয়ে একটা কপি বানাও যেখানে শুধু দাম বদলানো — মূলটা অক্ষত থাকবে।",
+ans:"const product = { name: 'Shirt', price: 500, stock: 3 };\n\nconst onSale = { ...product, price: 400 };\n\nconsole.log(product.price);   // 500 — অক্ষত\nconsole.log(onSale.price);    // 400",
+hint:"{ ...product, price: নতুন মান } — পরে লেখা key আগেরটাকে চাপা দেয়।"},
+q:[{q:"const copy = { ...orig, price: 100 }; — price কোনটা হবে?",o:["100 — পরে লেখা মান আগেরটাকে চাপা দেয়","orig এরটা","এরর"],a:0,
+e:"spread আগে সব কপি করে, তারপর যা লিখেছো সেটা উপরে বসে। তাই ক্রমটা গুরুত্বপূর্ণ।"}]},
+
+{t:"Optional chaining আর ?? ",
+w:"\"Cannot read property of undefined\" — JavaScript এর সবচেয়ে বিখ্যাত এরর। এই দুইটা জিনিস সেটা ঠেকায়।",
+c:["<code>?.</code> — যদি জিনিসটা null বা undefined হয়, তাহলে এরর না দিয়ে undefined ফেরত দেয়।",
+"<code>??</code> — বাম পাশ null বা undefined হলে ডান পাশেরটা নেয়।",
+"<code>??</code> আর <code>||</code> এর পার্থক্য গুরুত্বপূর্ণ: <code>||</code> সব falsy মানে ডান পাশে যায় (0 আর খালি string সহ), <code>??</code> শুধু null/undefined এ যায়।"],
+code:"const order = { customer: { name: 'Rakib' } };\n\norder.customer.name;        // 'Rakib'\n// order.shipping.address;  // এরর — shipping নাই\norder.shipping?.address;    // undefined — এরর না\n\nconst count = 0;\ncount || 10;    // 10  — ভুল! 0 falsy\ncount ?? 10;    // 0   — ঠিক",
+ex:{task:"একটা object বানাও যাতে nested তথ্য আছে। ?. দিয়ে এমন একটা key পড়ার চেষ্টা করো যেটা নাই, আর ?? দিয়ে একটা ডিফল্ট মান দাও।",
+ans:"const order = { id: 'ORD-1', customer: { name: 'Rakib' } };\n\nconst city = order.customer?.address?.city ?? 'Unknown';\nconsole.log(city);   // 'Unknown' — এরর হলো না",
+hint:"a?.b?.c ?? 'default' — চেইনের যেকোনো জায়গায় কিছু না থাকলে ডিফল্টে যাবে।"},
+q:[{q:"const n = 0; n ?? 5 কী দেবে?",o:["0 — কারণ 0 null বা undefined না","5","undefined"],a:0,
+e:"?? শুধু null আর undefined এ ডান পাশে যায়। 0 একটা বৈধ মান, তাই সেটাই থাকে। || হলে 5 আসত — আর সেটাই বাগ তৈরি করত।"},
+{q:"obj?.key কখন কাজে লাগে?",o:["obj null বা undefined হতে পারে এমন সময়","obj খুব বড় হলে","সবসময় লিখতে হয়"],a:0,
+e:"API থেকে আসা data-তে key না থাকা স্বাভাবিক। ?. ছাড়া পড়তে গেলে পুরো প্রোগ্রাম থেমে যাবে।"}]}
+
+]},
+{p:"TypeScript এর নিজস্ব অংশ",mods:[
+
+{t:"interface আর type",
+w:"এতক্ষণ যা শিখলে তার বেশিরভাগই JavaScript। এখান থেকে TypeScript এর নিজের জিনিস শুরু।",
+c:["একটা object এর আকৃতির নাম দিয়ে রাখা — যাতে বারবার লিখতে না হয়।",
+"<code>interface</code> আর <code>type</code> প্রায় একই কাজ করে। object এর আকৃতির জন্য দুইটাই চলে।",
+"সহজ নিয়ম: object এর আকৃতি হলে <code>interface</code>, অন্য কিছু (union, ইত্যাদি) হলে <code>type</code>।",
+"নামের প্রথম অক্ষর বড় হাতের লেখার প্রচলন আছে।"],
+code:"interface Product {\n  name: string;\n  price: number;\n  inStock: boolean;\n}\n\nconst shirt: Product = {\n  name: 'Shirt',\n  price: 500,\n  inStock: true\n};\n\n// ফাংশনেও ব্যবহার\nfunction showPrice(p: Product): string {\n  return p.name + ': ' + p.price;\n}\n\n// type দিয়েও একই\ntype Order = { id: string; total: number };",
+ex:{task:"একটা Customer interface বানাও (name, email, orderCount), তারপর সেই টাইপের একটা object বানিয়ে প্রিন্ট করো।",
+ans:"interface Customer {\n  name: string;\n  email: string;\n  orderCount: number;\n}\n\nconst c: Customer = {\n  name: 'Rakib',\n  email: 'rakib@example.com',\n  orderCount: 5\n};\n\nconsole.log(c.name, c.orderCount);",
+hint:"interface Customer { name: string; ... } তারপর const c: Customer = { ... };"},
+q:[{q:"interface এর মূল কাজ কী?",o:["একটা object এর আকৃতির নাম দিয়ে রাখা, যাতে বারবার লিখতে না হয়","object তৈরি করা","data সংরক্ষণ করা"],a:0,
+e:"interface কোনো কোড তৈরি করে না — এটা শুধু TypeScript কে বলে দেয় কোন আকৃতির জিনিস আশা করা হচ্ছে। চালানোর সময় এর অস্তিত্বই থাকে না।"}]},
+
+{t:"Union type আর literal type",
+w:"একটা জিনিস কয়েক রকম হতে পারে — সেটা বলার উপায়। status যেমন শুধু তিনটা মানের একটা হতে পারে।",
+c:["<code>|</code> দিয়ে বোঝানো হয় 'এটা অথবা ওটা'।",
+"<code>string | number</code> মানে দুইটার যেকোনো একটা হতে পারে।",
+"<b>Literal type</b> আরও শক্তিশালী — নির্দিষ্ট কিছু মানই কেবল গ্রহণযোগ্য।",
+"<code>'paid' | 'pending' | 'failed'</code> — এর বাইরে কিছু লিখলে সাথে সাথে এরর, আর VS Code নিজেই অপশন দেখায়।"],
+code:"type Status = 'paid' | 'pending' | 'failed';\n\nlet s: Status = 'paid';\n// s = 'done';   // এরর — এই মান নাই\n\ninterface Order {\n  id: string;\n  status: Status;\n}\n\n// একাধিক ধরন\nfunction format(v: string | number): string {\n  return String(v);\n}",
+ex:{task:"একটা PaymentMethod type বানাও যাতে শুধু 'card', 'cod', 'bkash' থাকতে পারে। একটা order object-এ ব্যবহার করো।",
+ans:"type PaymentMethod = 'card' | 'cod' | 'bkash';\n\ninterface Order {\n  id: string;\n  method: PaymentMethod;\n}\n\nconst o: Order = { id: 'ORD-1', method: 'bkash' };\nconsole.log(o.method);",
+hint:"type Name = 'a' | 'b' | 'c'; — শুধু quote দেওয়া মানগুলোই বৈধ হবে।"},
+q:[{q:"type Status = 'on' | 'off'; — এর সুবিধা কী?",o:["ভুল মান লিখলে সাথে সাথে ধরা পড়ে, আর editor অপশন দেখায়","কম জায়গা লাগে","দ্রুত চলে"],a:0,
+e:"literal type টাইপো ধরে ফেলে। 'of' লিখলে সাথে সাথে লাল দাগ। শুধু string লিখলে এই সুরক্ষা পেতে না।"}]},
+
+{t:"Optional আর readonly property",
+w:"বাস্তবে সব তথ্য সবসময় থাকে না। আর কিছু তথ্য একবার সেট হলে বদলানো উচিত না।",
+c:["<code>?</code> দিয়ে বোঝানো হয় এই property থাকতেও পারে, নাও পারে।",
+"<code>readonly</code> দিলে একবার সেট হওয়ার পর আর বদলানো যায় না।",
+"Optional property পড়ার সময় <code>?.</code> বা একটা চেক লাগবে — কারণ সেটা undefined হতে পারে।"],
+code:"interface Customer {\n  readonly id: string;    // বদলানো যাবে না\n  name: string;\n  phone?: string;         // থাকতেও পারে, নাও পারে\n}\n\nconst c: Customer = { id: 'C-1', name: 'Rakib' };\n// phone নাই — কোনো সমস্যা নাই\n\nc.name = 'Rakibul';     // ঠিক আছে\n// c.id = 'C-2';        // এরর — readonly\n\nconsole.log(c.phone?.length);   // নিরাপদ",
+ex:{task:"একটা Product interface বানাও যেখানে id readonly, নাম বাধ্যতামূলক, আর discount ঐচ্ছিক। discount ছাড়া একটা object বানাও।",
+ans:"interface Product {\n  readonly id: string;\n  name: string;\n  discount?: number;\n}\n\nconst p: Product = { id: 'P-1', name: 'Shirt' };\nconsole.log(p.discount ?? 0);   // 0",
+hint:"readonly id: string; আর discount?: number; — ? মানে ঐচ্ছিক।"},
+q:[{q:"phone?: string; মানে কী?",o:["phone থাকতেও পারে, নাও পারে — থাকলে string হবে","phone অবশ্যই লাগবে","phone সবসময় undefined"],a:0,
+e:"? মানে ঐচ্ছিক। object বানানোর সময় না দিলেও চলবে। কিন্তু পড়ার সময় মনে রাখতে হবে এটা undefined হতে পারে।"}]},
+
+{t:"Type narrowing — সংকীর্ণ করা",
+w:"Union type ব্যবহার করলে TypeScript তোমাকে বাধ্য করবে — কোনটা এখন সেটা আগে নিশ্চিত করো।",
+c:["<code>string | number</code> ধরনের জিনিসে সরাসরি <code>.toUpperCase()</code> ডাকা যাবে না — কারণ number হলে সেটা নাই।",
+"চেক করে নিলে TypeScript বুঝে যায় এই block এর ভিতরে এটা কোনটা। একে বলে <b>narrowing</b>।",
+"উপায়: <code>typeof</code>, সরাসরি তুলনা, বা <code>in</code> অপারেটর।"],
+code:"function show(v: string | number) {\n  if (typeof v === 'string') {\n    console.log(v.toUpperCase());   // এখানে TS জানে এটা string\n  } else {\n    console.log(v.toFixed(2));      // এখানে জানে number\n  }\n}\n\ntype Status = 'paid' | 'failed';\nfunction msg(s: Status) {\n  if (s === 'paid') return 'ধন্যবাদ';\n  return 'আবার চেষ্টা করুন';\n}\n\n// undefined হতে পারে এমন কিছু\nfunction len(x?: string) {\n  if (!x) return 0;\n  return x.length;   // এখানে x নিশ্চিতভাবে string\n}",
+ex:{task:"একটা ফাংশন লেখো যেটা string | number নেয়। string হলে দৈর্ঘ্য, number হলে দ্বিগুণ ফেরত দেবে।",
+ans:"function process(v: string | number): number {\n  if (typeof v === 'string') {\n    return v.length;\n  }\n  return v * 2;\n}\n\nconsole.log(process('hello'));   // 5\nconsole.log(process(10));        // 20",
+hint:"typeof v === 'string' দিয়ে চেক করো। else এ TypeScript নিজেই বুঝে নেবে এটা number।"},
+q:[{q:"typeof v === 'string' চেক করার পর TypeScript কী জানে?",o:["ওই block এর ভিতরে v নিশ্চিতভাবে string","কিছুই না","v এখন number"],a:0,
+e:"এটাই narrowing — চেক দেখে TypeScript ভিতরের অংশে টাইপটা সংকীর্ণ করে নেয়। তাই string এর সব method ব্যবহার করতে দেয়।"}]},
+
+{t:"any, unknown আর never",
+w:"<code>any</code> হলো TypeScript এর পালানোর দরজা। ব্যবহার করলে পুরো সুরক্ষা হারাবে।",
+c:["<code>any</code> — TypeScript কে বলা 'এটা নিয়ে কিছু চেক করো না'। এটা ব্যবহার করলে TypeScript ব্যবহার করার মানেই থাকে না।",
+"<code>unknown</code> — নিরাপদ বিকল্প। কিছু জানি না, তাই ব্যবহার করার আগে চেক করতে বাধ্য করে।",
+"<code>never</code> — এমন কিছু যা কখনো ঘটবে না। বেশিরভাগ সময় এরর বার্তায় দেখবে।",
+"<b>নিয়ম: any লিখবে না। আটকে গেলে unknown দিয়ে narrowing করো।</b>"],
+code:"let a: any = 'hello';\na.foo.bar();        // TypeScript কিছু বলবে না — চললে ক্র্যাশ\n\nlet u: unknown = 'hello';\n// u.toUpperCase();  // এরর — আগে চেক করো\nif (typeof u === 'string') {\n  u.toUpperCase();  // এখন ঠিক আছে\n}\n\n// API থেকে data আসলে\nasync function getData(): Promise<unknown> {\n  return { id: 1 };\n}",
+ex:{task:"একটা unknown টাইপের variable নাও, typeof দিয়ে চেক করে string হলে বড় হাতের করে প্রিন্ট করো।",
+ans:"const data: unknown = 'rakib';\n\nif (typeof data === 'string') {\n  console.log(data.toUpperCase());   // RAKIB\n} else {\n  console.log('string না');\n}",
+hint:"unknown এ সরাসরি কিছু করা যায় না — আগে typeof দিয়ে চেক করতে হবে।"},
+q:[{q:"any ব্যবহার করলে কী হারাও?",o:["পুরো type checking — TypeScript আর কোনো ভুল ধরবে না","গতি","কোডের সৌন্দর্য"],a:0,
+e:"any মানে TypeScript ওই জায়গায় চোখ বন্ধ করে ফেলল। তখন টাইপো, ভুল method — কিছুই ধরা পড়বে না।"},
+{q:"unknown কেন any এর চেয়ে ভালো?",o:["ব্যবহারের আগে চেক করতে বাধ্য করে","এটা দ্রুত","এটা কম জায়গা নেয়"],a:0,
+e:"unknown বলে 'আমি জানি না এটা কী, তুমিও ধরে নিয়ো না'। চেক করে নিশ্চিত হওয়ার পরেই ব্যবহার করতে দেয় — এটাই নিরাপত্তা।"}]},
+
+{t:"Generic — পুনর্ব্যবহারযোগ্য টাইপ",
+w:"TypeScript এর সবচেয়ে ভয় পাওয়া জিনিস। আসলে ধারণাটা সরল — টাইপটা পরে ঠিক হবে।",
+c:["একটা ফাংশন যদি string, number, object — সবকিছুর সাথে কাজ করে, তাহলে টাইপটা আগে থেকে বলা যায় না।",
+"<code>&lt;T&gt;</code> মানে — একটা টাইপ, যেটা ব্যবহারের সময় ঠিক হবে। T শুধু একটা নাম, যেকোনো নাম দেওয়া যায়।",
+"তুমি ইতিমধ্যে generic ব্যবহার করেছো: <code>string[]</code> আসলে <code>Array&lt;string&gt;</code>, আর <code>Promise&lt;number&gt;</code>।"],
+code:"// generic ছাড়া — any ব্যবহার করতে হতো\nfunction firstAny(arr: any[]): any { return arr[0]; }\n\n// generic দিয়ে — টাইপ রক্ষা পায়\nfunction first<T>(arr: T[]): T {\n  return arr[0];\n}\n\nconst a = first(['x', 'y']);    // TypeScript জানে: string\nconst b = first([1, 2]);        // জানে: number\n\n// যা আগে দেখেছো\nconst nums: Array<number> = [1, 2];\nasync function load(): Promise<string> { return 'ok'; }",
+ex:{task:"একটা generic ফাংশন লেখো যেটা যেকোনো array এর শেষ জিনিসটা ফেরত দেয়।",
+ans:"function last<T>(arr: T[]): T {\n  return arr[arr.length - 1];\n}\n\nconsole.log(last(['a', 'b', 'c']));   // 'c'\nconsole.log(last([1, 2, 3]));         // 3",
+hint:"function last<T>(arr: T[]): T { ... } — T লিখলেই TypeScript বাকিটা বুঝে নেবে।"},
+q:[{q:"<T> এর মানে কী?",o:["একটা টাইপ যেটা ফাংশন ব্যবহারের সময় ঠিক হবে","একটা বিশেষ ধরনের variable","HTML এর ট্যাগ"],a:0,
+e:"T একটা জায়গা ধরে রাখে। কেউ string এর array দিলে T হয়ে যায় string। এভাবে any ব্যবহার না করেই যেকোনো ধরনের সাথে কাজ করা যায়।"},
+{q:"Promise<string> মানে কী?",o:["একটা Promise যেটা শেষে একটা string দেবে","একটা string","Promise এর নাম string"],a:0,
+e:"Promise নিজেই generic। ভিতরের অংশটা বলে দেয় কাজ শেষে কী ধরনের মান আসবে। await করলে সেই string টাই পাবে।"}]},
+
+{t:"Utility type — তৈরি করা টাইপ",
+w:"একটা interface থেকে নতুন টাইপ বানানোর শর্টকাট। বাস্তব কোডে অহরহ দেখবে।",
+c:["<code>Partial&lt;T&gt;</code> — সব property ঐচ্ছিক করে দেয়। আপডেট করার সময় কাজে লাগে।",
+"<code>Pick&lt;T, 'a'|'b'&gt;</code> — শুধু কিছু property নেয়।",
+"<code>Omit&lt;T, 'a'&gt;</code> — কিছু property বাদ দেয়।",
+"<code>Record&lt;K, V&gt;</code> — key-value জোড়ার object এর টাইপ।"],
+code:"interface Product {\n  id: string;\n  name: string;\n  price: number;\n}\n\n// সব ঐচ্ছিক — আপডেটের জন্য\nfunction update(id: string, changes: Partial<Product>) { }\nupdate('P-1', { price: 400 });   // শুধু price দিলেই হলো\n\n// কিছু বেছে নেওয়া\ntype Preview = Pick<Product, 'name' | 'price'>;\n\n// কিছু বাদ\ntype NewProduct = Omit<Product, 'id'>;\n\n// key-value\nconst counts: Record<string, number> = { shirt: 3, mug: 1 };",
+ex:{task:"একটা Order interface বানাও (id, total, status), তারপর Omit দিয়ে একটা টাইপ বানাও যেখানে id নাই — নতুন order তৈরির জন্য।",
+ans:"interface Order {\n  id: string;\n  total: number;\n  status: string;\n}\n\ntype NewOrder = Omit<Order, 'id'>;\n\nconst draft: NewOrder = { total: 1500, status: 'pending' };\nconsole.log(draft);",
+hint:"type NewOrder = Omit<Order, 'id'>; — এখন id ছাড়াই object বানানো যাবে।"},
+q:[{q:"Partial<Product> কী করে?",o:["Product এর সব property ঐচ্ছিক করে দেয়","Product এর অর্ধেক নেয়","Product মুছে দেয়"],a:0,
+e:"আপডেট করার সময় তুমি সব field পাঠাও না — শুধু যেটা বদলাচ্ছে। Partial ঠিক সেই পরিস্থিতির জন্য।"}]}
+
+]},
+{p:"Async, Class আর প্রজেক্ট",mods:[
+
+{t:"Promise — এখনো শেষ হয়নি এমন কাজ",
+w:"Playwright এর প্রতিটা লাইন এর উপর দাঁড়িয়ে। এটা না বুঝে await লিখলে একদিন না একদিন আটকাবেই।",
+c:["কিছু কাজে সময় লাগে — ফাইল পড়া, সার্ভারে অনুরোধ, পেজ লোড। JavaScript এগুলোর জন্য দাঁড়িয়ে থাকে না।",
+"Promise হলো একটা প্রতিশ্রুতি: 'কাজটা করছি, হয়ে গেলে ফল দেব'।",
+"তিনটা অবস্থা: pending (চলছে), fulfilled (সফল), rejected (ব্যর্থ)।",
+"<code>Promise&lt;string&gt;</code> মানে — শেষ হলে একটা string দেবে।"],
+code:"// একটা ফাংশন যেটা Promise দেয়\nfunction delay(ms: number): Promise<string> {\n  return new Promise(resolve => {\n    setTimeout(() => resolve('শেষ'), ms);\n  });\n}\n\n// পুরনো ধরন — .then()\ndelay(1000).then(result => console.log(result));\n\nconsole.log('এটা আগে ছাপবে');   // কারণ উপরেরটা অপেক্ষা করছে",
+ex:{task:"delay ফাংশনটা কপি করে চালাও। লক্ষ্য করো কোন লাইনটা আগে প্রিন্ট হয় — আর কেন।",
+ans:"function delay(ms: number): Promise<string> {\n  return new Promise(resolve => {\n    setTimeout(() => resolve('শেষ'), ms);\n  });\n}\n\ndelay(1000).then(r => console.log(r));\nconsole.log('আমি আগে');\n\n// আউটপুট: 'আমি আগে' তারপর 'শেষ'",
+hint:"setTimeout এক সেকেন্ড অপেক্ষা করে, কিন্তু নিচের লাইন সাথে সাথে চলে যায়।"},
+q:[{q:"Promise এর তিনটা অবস্থা কী?",o:["pending, fulfilled, rejected","start, middle, end","open, close, error"],a:0,
+e:"pending মানে এখনো চলছে। fulfilled মানে সফলভাবে শেষ। rejected মানে কিছু ভুল হয়েছে — সেটা catch দিয়ে ধরতে হয়।"}]},
+
+{t:"async / await — Promise এর সহজ রূপ",
+w:"Playwright-এ তুমি .then() প্রায় দেখবেই না। সব async/await দিয়ে লেখা।",
+c:["<code>await</code> মানে — এই Promise শেষ হওয়া পর্যন্ত দাঁড়াও, তারপর ফলটা দাও।",
+"<code>await</code> শুধু <code>async</code> ফাংশনের ভিতরে কাজ করে।",
+"যে ফাংশনে async লেখা, সেটা নিজেও একটা Promise ফেরত দেয়। তাই তাকেও await করতে হয়।",
+"<b>await ভুলে যাওয়াই সবচেয়ে বড় ভুল</b> — কোড চলে যায়, কিন্তু ফল আসার আগেই।"],
+code:"async function getPrice(): Promise<number> {\n  const r = await delay(500);   // এখানে দাঁড়ায়\n  return 500;\n}\n\nasync function main() {\n  const price = await getPrice();\n  console.log(price);\n}\nmain();\n\n// await ভুলে গেলে\nasync function wrong() {\n  const p = getPrice();      // await নাই\n  console.log(p);            // Promise { pending } — সংখ্যা না\n}",
+ex:{task:"একটা async ফাংশন লেখো যেটা delay এর জন্য অপেক্ষা করে, তারপর 'হয়ে গেছে' প্রিন্ট করে। await দিয়ে আর await ছাড়া — দুইভাবে চালিয়ে পার্থক্য দেখো।",
+ans:"async function run() {\n  const r = await delay(500);\n  console.log(r);           // 'শেষ'\n\n  const wrong = delay(500);  // await ছাড়া\n  console.log(wrong);        // Promise { <pending> }\n}\nrun();",
+hint:"await দিলে আসল মান পাবে, না দিলে Promise object টাই পাবে।"},
+q:[{q:"await ছাড়া async ফাংশন ডাকলে কী পাও?",o:["একটা Promise, আসল মান না","আসল মানই পাও","এরর"],a:0,
+e:"এজন্যই Playwright-এ await ভুলে গেলে অদ্ভুত আচরণ হয় — তুমি ভাবছো ক্লিক হয়ে গেছে, আসলে ক্লিকের প্রতিশ্রুতিটা হাতে নিয়ে বসে আছো।"},
+{q:"await কোথায় লেখা যায়?",o:["async লেখা ফাংশনের ভিতরে","যেকোনো জায়গায়","শুধু ফাইলের শুরুতে"],a:0,
+e:"await কে জানতে হয় ফাংশনটা অপেক্ষা করতে পারে। async সেটাই বলে দেয়। নইলে সরাসরি syntax এরর।"}]},
+
+{t:"Error handling — try / catch",
+w:"কিছু ভাঙবেই। সেটা সামলানোর নিয়ম — আর QA হিসেবে তোমার কাজই তো ভাঙা জিনিস নিয়ে।",
+c:["<code>try</code> ব্লকে ঝুঁকিপূর্ণ কোড রাখো। সমস্যা হলে <code>catch</code> চলবে।",
+"<code>finally</code> দুই ক্ষেত্রেই চলে — পরিষ্কার করার কাজে লাগে।",
+"TypeScript-এ catch এর জিনিসটার টাইপ <code>unknown</code> — কারণ যেকোনো কিছু throw করা যায়। তাই ব্যবহারের আগে চেক করতে হয়।"],
+code:"async function load() {\n  try {\n    const data = await fetchSomething();\n    return data;\n  } catch (e) {\n    if (e instanceof Error) {\n      console.log('সমস্যা:', e.message);\n    }\n    return null;\n  } finally {\n    console.log('শেষ পর্যন্ত এটা চলবেই');\n  }\n}\n\n// নিজে এরর তৈরি করা\nfunction divide(a: number, b: number): number {\n  if (b === 0) throw new Error('শূন্য দিয়ে ভাগ করা যায় না');\n  return a / b;\n}",
+ex:{task:"divide ফাংশনটা লেখো, তারপর try/catch দিয়ে শূন্য দিয়ে ভাগ করার চেষ্টা করে এররটা ধরো।",
+ans:"function divide(a: number, b: number): number {\n  if (b === 0) throw new Error('শূন্য দিয়ে ভাগ নয়');\n  return a / b;\n}\n\ntry {\n  console.log(divide(10, 0));\n} catch (e) {\n  if (e instanceof Error) console.log('ধরা পড়ল:', e.message);\n}",
+hint:"throw new Error('বার্তা') দিয়ে এরর তৈরি করো, catch (e) দিয়ে ধরো।"},
+q:[{q:"catch (e) — এখানে e এর টাইপ কী?",o:["unknown — তাই ব্যবহারের আগে চেক করতে হয়","Error","string"],a:0,
+e:"JavaScript-এ যেকোনো জিনিস throw করা যায় — এমনকি একটা সংখ্যাও। তাই TypeScript ধরে নেয় না যে এটা Error। e instanceof Error দিয়ে নিশ্চিত হতে হয়।"}]},
+
+{t:"Module — import আর export",
+w:"একটা ফাইলে সব লেখা যায় না। Page Object বানাতে গেলেই এটা লাগবে।",
+c:["<code>export</code> দিয়ে অন্য ফাইলকে কিছু দেওয়া যায়।",
+"<code>import</code> দিয়ে অন্য ফাইল থেকে আনা যায়।",
+"পথ লেখার নিয়ম: <code>./</code> একই ফোল্ডার, <code>../</code> এক ধাপ উপরে। <code>.ts</code> লিখতে হয় না।",
+"নাম ছাড়া কিছু import করলে বুঝবে সেটা <code>export default</code> — তবে নামযুক্ত export ই বেশি স্পষ্ট।"],
+code:"// ---- utils.ts ----\nexport const TAX_RATE = 0.15;\n\nexport function addTax(p: number): number {\n  return p * (1 + TAX_RATE);\n}\n\nexport interface Product {\n  name: string;\n  price: number;\n}\n\n// ---- main.ts ----\nimport { addTax, TAX_RATE, Product } from './utils';\n\nconsole.log(addTax(100));",
+ex:{task:"দুইটা ফাইল বানাও। utils.ts-এ একটা ফাংশন export করো, main.ts-এ সেটা import করে ব্যবহার করো।",
+ans:"// utils.ts\nexport function greet(name: string): string {\n  return 'Hello ' + name;\n}\n\n// main.ts\nimport { greet } from './utils';\nconsole.log(greet('Rakib'));\n\n// চালাও: npx tsx main.ts",
+hint:"export লিখতে ভুলো না — নইলে import করা যাবে না।"},
+q:[{q:"import { x } from './utils' — এখানে ./ মানে কী?",o:["একই ফোল্ডারে utils ফাইলটা আছে","একটা প্যাকেজ","root ফোল্ডার"],a:0,
+e:"./ মানে একই ফোল্ডার, ../ মানে এক ধাপ উপরে। ./ ছাড়া লিখলে TypeScript ধরে নেয় এটা node_modules এর একটা প্যাকেজ।"}]},
+
+{t:"Class — Page Object এর ভিত্তি",
+w:"Playwright এর Page Object Model পুরোটাই class এর উপর। C++ এ class করেছো, ধারণা একই — শুধু লেখার নিয়ম আলাদা।",
+c:["<code>class</code> হলো একটা ছাঁচ। <code>new</code> দিয়ে সেই ছাঁচ থেকে জিনিস বানানো হয়।",
+"<code>constructor</code> — জিনিসটা বানানোর সময় একবার চলে। শুরুর কাজগুলো এখানে।",
+"<code>this</code> — এই নির্দিষ্ট জিনিসটা।",
+"<code>private</code> দিলে বাইরে থেকে ব্যবহার করা যায় না। <code>readonly</code> দিলে বদলানো যায় না।"],
+code:"class Cart {\n  private items: string[] = [];\n  readonly storeName: string;\n\n  constructor(storeName: string) {\n    this.storeName = storeName;\n  }\n\n  add(item: string): void {\n    this.items.push(item);\n  }\n\n  count(): number {\n    return this.items.length;\n  }\n}\n\nconst c = new Cart('BLOMINOR');\nc.add('Shirt');\nc.add('Mug');\nconsole.log(c.count());      // 2\n// c.items;                  // এরর — private",
+ex:{task:"একটা Order class বানাও যার constructor একটা id নেয়, একটা addItem method আছে, আর total বের করার method আছে।",
+ans:"class Order {\n  readonly id: string;\n  private prices: number[] = [];\n\n  constructor(id: string) {\n    this.id = id;\n  }\n\n  addItem(price: number): void {\n    this.prices.push(price);\n  }\n\n  total(): number {\n    return this.prices.reduce((s, p) => s + p, 0);\n  }\n}\n\nconst o = new Order('ORD-1');\no.addItem(500);\no.addItem(300);\nconsole.log(o.id, o.total());   // ORD-1 800",
+hint:"constructor(id: string) { this.id = id; } — this দিয়ে নিজের property-তে বসাও।"},
+q:[{q:"constructor কখন চলে?",o:["new দিয়ে জিনিসটা বানানোর সময়, একবার","প্রতিটা method ডাকার সময়","কখনো না"],a:0,
+e:"constructor শুরুর সেটআপের জন্য। Playwright এর Page Object-এ এখানেই locator গুলো তৈরি করা হয়।"},
+{q:"private দিলে কী হয়?",o:["class এর বাইরে থেকে ওটা ব্যবহার করা যায় না","সেটা মুছে যায়","সেটা দ্রুত হয়"],a:0,
+e:"private ভিতরের জিনিস লুকিয়ে রাখে। ব্যবহারকারী শুধু method গুলো দেখে, ভিতরে কীভাবে রাখা আছে জানে না — ফলে পরে ভিতরটা বদলানো নিরাপদ।"}]},
+
+{t:"tsconfig.json — কড়াকড়ির সেটিং",
+w:"একটা সেটিং আছে যেটা TypeScript এর অর্ধেক উপকার নিয়ন্ত্রণ করে — strict।",
+c:["<code>tsconfig.json</code> ফাইলটা TypeScript কে বলে দেয় কীভাবে কাজ করবে।",
+"<b>strict: true</b> — সবচেয়ে গুরুত্বপূর্ণ সেটিং। এটা চালু থাকলে null/undefined এর ভুল, implicit any — সব ধরা পড়ে।",
+"নতুনরা প্রায়ই এটা বন্ধ করে দেয় কারণ অনেক এরর আসে। <b>করবে না</b> — ওই এররগুলোই তোমাকে বাঁচাচ্ছে।",
+"<code>npx tsc --init</code> দিয়ে একটা তৈরি করা যায়।"],
+code:"{\n  \"compilerOptions\": {\n    \"strict\": true,\n    \"target\": \"ES2022\",\n    \"module\": \"commonjs\",\n    \"noEmit\": true\n  }\n}\n\n// strict চালু থাকলে এটা এরর:\nfunction f(name) { }        // name এর টাইপ নাই\n\n// strict চালু থাকলে এটাও এরর:\nconst x: string | null = null;\nx.length;                   // null হতে পারে — আগে চেক করো",
+ex:{task:"তোমার ts-practice ফোল্ডারে npx tsc --init চালাও। খুলে দেখো strict: true আছে কিনা।",
+ans:"npx tsc --init\n\n// তারপর tsconfig.json খুলে দেখো:\n// \"strict\": true  — এই লাইনটা যেন কমেন্ট করা না থাকে\n\n// type check করতে:\nnpx tsc --noEmit",
+hint:"tsc --init একটা তৈরি তৈরি tsconfig.json বানিয়ে দেয়, প্রচুর কমেন্টসহ।"},
+q:[{q:"strict: true বন্ধ করা উচিত না কেন?",o:["এটাই TypeScript এর বেশিরভাগ সুরক্ষা দেয়","এটা ছাড়া কোড চলে না","এটা গতি বাড়ায়"],a:0,
+e:"strict বন্ধ করলে null এর ভুল আর টাইপ ছাড়া parameter চুপচাপ পার হয়ে যায় — মানে TypeScript ব্যবহার করেও JavaScript এর বাগগুলোই পাচ্ছো।"}]},
+
+{t:"সব একসাথে — একটা ছোট প্রজেক্ট",
+w:"আলাদা আলাদা শেখা এক জিনিস। একসাথে ব্যবহার করতে পারা আরেক জিনিস। এটাই পরীক্ষা।",
+c:["এখন পর্যন্ত শেখা সব একটা ফাইলে ব্যবহার করবে: interface, union type, array method, class, async/await, error handling।",
+"এই কোডের গঠনটাই Playwright এর Page Object এর গঠন। তাই এটা পারলে week 5 এর POM সহজ লাগবে।",
+"কোড লেখার আগে কাগজে লিখে নাও কী কী লাগবে — তারপর টাইপ করো।"],
+code:"interface Order {\n  readonly id: string;\n  total: number;\n  status: 'paid' | 'pending' | 'failed';\n}\n\nclass OrderStore {\n  private orders: Order[] = [];\n\n  add(order: Order): void {\n    this.orders.push(order);\n  }\n\n  paidTotal(): number {\n    return this.orders\n      .filter(o => o.status === 'paid')\n      .reduce((sum, o) => sum + o.total, 0);\n  }\n\n  find(id: string): Order | undefined {\n    return this.orders.find(o => o.id === id);\n  }\n}",
+ex:{task:"উপরের OrderStore টা নিজে লেখো (দেখে কপি না করে), তিনটা order যোগ করো — দুইটা paid, একটা pending — তারপর paidTotal আর find চালিয়ে দেখো।",
+ans:"const store = new OrderStore();\n\nstore.add({ id: 'A', total: 500, status: 'paid' });\nstore.add({ id: 'B', total: 300, status: 'pending' });\nstore.add({ id: 'C', total: 700, status: 'paid' });\n\nconsole.log(store.paidTotal());        // 1200\nconsole.log(store.find('B')?.total);   // 300\nconsole.log(store.find('Z'));          // undefined",
+hint:"find এর return টাইপ Order | undefined — তাই ফলাফল পড়তে ?. লাগবে।"},
+q:[{q:"find এর return টাইপ Order | undefined কেন?",o:["কিছু না পাওয়া গেলে undefined আসবে, তাই দুইটাই সম্ভব","এটা একটা ভুল","undefined মানে এরর"],a:0,
+e:"TypeScript তোমাকে বাধ্য করছে এই সম্ভাবনাটা সামলাতে। এজন্যই ?. বা একটা চেক লাগে — আর এভাবেই 'cannot read property of undefined' এরর আটকে যায়।"},
+{q:"এই class এর গঠনটা Playwright এর কোন জিনিসের মতো?",o:["Page Object Model","Test runner","Locator"],a:0,
+e:"একই গঠন — constructor, private field, আর কাজ করার method। week 5 এ ProductPage বানানোর সময় এটাই আবার দেখবে।"}]}
+
+]}
+];
+const KEY='tsfz.v1';
+let st={done:{},cur:0};
+try{const r=localStorage.getItem(KEY);if(r)st=Object.assign(st,JSON.parse(r));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+
+// flatten
+const FLAT=[];
+COURSE.forEach(function(p,pi){p.mods.forEach(function(m,mi){FLAT.push({p:p.p,pi:pi,m:m});});});
+const TOTAL=FLAT.length;
+document.getElementById('sTotal').textContent=TOTAL;
+
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+// minimal highlighter for the code blocks
+function hi(src){
+  let s=esc(src);
+  s=s.replace(/(\/\/[^\n]*|#[^\n]*)/g,'<span class="cm">$1</span>');
+  s=s.replace(/('[^'\n]*')/g,'<span class="s">$1</span>');
+  s=s.replace(/\b(const|let|var|function|return|if|else|for|while|of|in|class|new|this|async|await|import|export|from|interface|type|readonly|private|public|throw|try|catch|finally|typeof|instanceof|void|extends|implements)\b/g,'<span class="k">$1</span>');
+  s=s.replace(/\b([a-zA-Z_$][\w$]*)\(/g,'<span class="f">$1</span>(');
+  return s;
+}
+
+function renderRail(){
+  const rail=document.getElementById('rail');
+  rail.innerHTML=COURSE.map(function(p,pi){
+    const rows=p.mods.map(function(m){
+      const i=FLAT.findIndex(function(f){return f.m===m;});
+      return '<button class="rbtn'+(st.done[i]?' done':'')+(i===st.cur?' cur':'')+'" data-i="'+i+'" type="button">'+
+        '<span class="n"><span>'+(i+1)+'</span></span><span>'+esc(m.t)+'</span></button>';
+    }).join('');
+    return '<div class="rgroup"><h4>'+esc(p.p)+'</h4>'+rows+'</div>';
+  }).join('');
+  rail.querySelectorAll('.rbtn').forEach(function(b){
+    b.addEventListener('click',function(){st.cur=+b.dataset.i;save();render();window.scrollTo({top:0,behavior:'smooth'});});
+  });
+}
+
+function renderProgress(){
+  const n=Object.keys(st.done).filter(function(k){return st.done[k];}).length;
+  document.getElementById('sDone').textContent=n;
+  document.getElementById('sBar').style.width=(n/TOTAL*100)+'%';
+}
+
+function render(){
+  renderRail();renderProgress();
+  const f=FLAT[st.cur],m=f.m,main=document.getElementById('main');
+  main.innerHTML=
+    '<section class="mod">'+
+      '<div class="mhead">'+esc(f.p)+' · মডিউল '+(st.cur+1)+' / '+TOTAL+'</div>'+
+      '<h2>'+esc(m.t)+'</h2>'+
+      '<div class="why">'+m.w+'</div>'+
+      m.c.map(function(x){return '<p>'+x+'</p>';}).join('')+
+      '<pre><code>'+hi(m.code)+'</code></pre>'+
+
+      '<div class="block">'+
+        '<h3>অনুশীলন</h3>'+
+        '<p class="task">'+esc(m.ex.task)+'</p>'+
+        '<div class="btns">'+
+          '<button class="btn" id="bHint" type="button">ইঙ্গিত</button>'+
+          '<button class="btn" id="bAns" type="button">উত্তর দেখাও</button>'+
+        '</div>'+
+        '<div id="hintWrap" hidden><div class="hintbox">'+esc(m.ex.hint)+'</div></div>'+
+        '<div id="ansWrap" hidden class="reveal"><pre><code>'+hi(m.ex.ans)+'</code></pre></div>'+
+      '</div>'+
+
+      '<div class="block quiz">'+
+        '<h3>কুইজ</h3>'+
+        m.q.map(function(q,qi){
+          return '<div class="qitem" data-q="'+qi+'">'+
+            '<div class="qq">'+esc(q.q)+'</div>'+
+            q.o.map(function(o,oi){return '<button class="opt" type="button" data-o="'+oi+'">'+esc(o)+'</button>';}).join('')+
+            '<div class="exp" hidden>'+q.e+'</div>'+
+          '</div>';
+        }).join('')+
+      '</div>'+
+
+      '<div class="nav">'+
+        (st.cur>0?'<button class="btn" id="bPrev" type="button">← আগেরটা</button>':'<span></span>')+
+        '<button class="btn main" id="bDone" type="button">'+(st.done[st.cur]?'শেষ করা হয়েছে ✓':'শেষ, পরেরটায় যাও →')+'</button>'+
+      '</div>'+
+    '</section>';
+
+  document.getElementById('bHint').addEventListener('click',function(){
+    const w=document.getElementById('hintWrap');w.hidden=!w.hidden;
+    this.textContent=w.hidden?'ইঙ্গিত':'ইঙ্গিত লুকাও';
+  });
+  document.getElementById('bAns').addEventListener('click',function(){
+    const w=document.getElementById('ansWrap');w.hidden=!w.hidden;
+    this.textContent=w.hidden?'উত্তর দেখাও':'উত্তর লুকাও';
+  });
+  main.querySelectorAll('.qitem').forEach(function(item){
+    const qi=+item.dataset.q,correct=m.q[qi].a;
+    item.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        const chosen=+btn.dataset.o;
+        item.querySelectorAll('.opt').forEach(function(b,bi){
+          b.disabled=true;
+          if(bi===correct)b.classList.add('right');
+          else if(bi===chosen)b.classList.add('wrong');
+        });
+        item.querySelector('.exp').hidden=false;
+      });
+    });
+  });
+  const prev=document.getElementById('bPrev');
+  if(prev)prev.addEventListener('click',function(){st.cur--;save();render();window.scrollTo({top:0,behavior:'smooth'});});
+  document.getElementById('bDone').addEventListener('click',function(){
+    st.done[st.cur]=true;
+    if(st.cur<TOTAL-1)st.cur++;
+    save();render();window.scrollTo({top:0,behavior:'smooth'});
+  });
+}
+
+document.getElementById('rst').addEventListener('click',function(){
+  if(this.dataset.armed){st={done:{},cur:0};save();render();this.textContent='সব অগ্রগতি মুছে ফেলো';delete this.dataset.armed;}
+  else{this.dataset.armed='1';this.textContent='আবার চাপলে সব মুছে যাবে';const b=this;setTimeout(function(){b.textContent='সব অগ্রগতি মুছে ফেলো';delete b.dataset.armed;},4000);}
+});
+
+render();
+</script>
+
+</body>
+</html>
