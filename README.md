@@ -19,7 +19,7 @@ This course closes that gap. The explanations are in Bangla; the technical terms
 ## Quick start
 
 ```bash
-git clone https://github.com/<your-username>/typescript-from-zero.git
+git clone https://github.com/cryptic91/TypeScript-from-Zero.git
 cd typescript-from-zero
 npm install
 ```
