@@ -39,12 +39,12 @@ npx tsx exercises/01-setup.ts
 ## How to use this
 
 1. **Open `course.html`** and read the module — why it matters, the concept, the example.
-2. **Open the matching file in `exercises/`.** The task is in the comments at the top.
+2. **Copy the matching file from `exercises/` into `practice/`** and open it there. The task is in the comments at the top. Leave the original untouched.
 3. **Type the solution yourself.** Do not copy the example. Typing is where the learning happens.
-4. **Run it:** `npx tsx exercises/04-type-inference.ts`
+4. **Run it:** `npx tsx practice/04-type-inference.ts`
 5. **Stuck?** The course page has a hint button before it has an answer button. Use them in that order.
 6. **Take the quiz** on the course page. It targets the things people actually get wrong.
-7. **Compare** with `solutions/` only after you have a working attempt of your own.
+7. **Compare** with `solutions/` (and `practice/`) only after you have a working attempt of your own.
 
 Progress is saved in your browser, so you can stop and come back. Modules are not dated — do one a week or six in an evening.
 
@@ -74,7 +74,8 @@ The last module builds a small typed `OrderStore` class. Its shape is deliberate
 ```
 course.html          The course — 30 modules, exercises and quizzes. Opens in any browser.
 exercises/           One starter file per module. The task is in the header comment.
-solutions/           Worked solutions. Every one typechecks and runs.
+solutions/           Reference answers. Every one typechecks and runs.
+practice/            A completed run through the course, kept as typed.
 tsconfig.json        strict mode on, as it should be.
 package.json         Just tsx and typescript.
 ```
@@ -97,6 +98,27 @@ Strict mode is where most of TypeScript's value lives: it catches `null` and `un
 - [TypeScript Playground](https://www.typescriptlang.org/play) — try an idea in the browser with no setup.
 - [MDN JavaScript Guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide) — for anything about the underlying language.
 - [type-challenges](https://github.com/type-challenges/type-challenges) — puzzles, once generics feel comfortable.
+
+---
+
+## Two sets of answers
+
+| Folder | What it holds |
+|---|---|
+| `solutions/` | The reference answer for each module — short, clean, written to be read. |
+| `practice/` | A completed run through the course, kept as it was actually typed. Different variable names, extra `console.log` lines, the occasional second attempt. |
+
+Every exercise has more than one correct answer. Comparing the two folders shows that directly: the same task, solved two ways, both passing `tsc --noEmit` under `strict`.
+
+**Leave `exercises/` alone.** Those files are the blank starting point. Copy one into `practice/` and work there, so the templates stay usable:
+
+```bash
+# macOS / Linux
+cp exercises/02-variables.ts practice/
+
+# Windows PowerShell
+Copy-Item exercises\02-variables.ts practice\
+```
 
 ---
 
